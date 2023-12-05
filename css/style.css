@@ -1,16 +1,112 @@
 body .hide {
-    display: none;
+  display: none;
 }
 
-body .display {
-    display: block;
+.display {
+  display: inline-block;
+}
+
+h1 {
+  color: green;
 }
 
 input {
-    width: 300px;
+  width: 300px;
 }
 
 #msg {
-    font-size: x-large;
-    color: brown;
+  font-size: x-large;
+  color: green;
+}
+
+#divErr {
+  font-size: x-large;
+  color: red;
+}
+
+body {
+  background-color: #f8f9fa; /* Couleur de fond */
+ 
+}
+
+#listePers {
+  margin-top: 20px;
+}
+
+#listePers th,
+#listePers td {
+  text-align: center;
+}
+
+#listePers th {
+  background-color: #343a40; /* Couleur d'arrière-plan de l'en-tête */
+  color: #ffffff; /* Couleur du texte de l'en-tête */
+}
+
+#listePers tbody tr:nth-child(even) {
+  background-color: #f2f2f2; /* Couleur de fond des lignes paires */
+}
+
+#listePers tbody tr:hover {
+  background-color: #d4edda; /* Couleur de fond au survol de la ligne */
+}
+
+#formPersonne {
+  margin-top: 20px;
+  width: 50%;
+  margin-left: 25%;
+}
+
+/* Ajoutez ces styles CSS dans votre fichier CSS ou balise <style> */
+
+.modifSuppBtn {
+  display: inline-block;
+  margin: 10px;
+  border: none;
+}
+
+#divAjoutePersonne {
+  margin-top: 20px;
+  background-color: #ffffff; /* Couleur du fond de la div */
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Ombre légère */
+}
+
+#formPersonne {
+  margin-top: 20px;
+}
+
+#formPersonne label {
+  font-weight: bold;
+}
+
+#formPersonne input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+}
+
+.btn {
+  margin-top: 10px;
+}
+
+#tableContainer{
+  width: 100%;
+  margin: auto;
+}
+
+#powered {
+  font-size: 6px;
+  font-style: italic;
+  text-align: center;
+  align-items: baseline;
+}
+
+fieldset {
+  border: 1px solid gray;
+  padding: 15px;
+  
+  border-radius: 10px;
 }

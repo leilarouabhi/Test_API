@@ -11,18 +11,22 @@ var modifier = document.getElementById("btnModifier");
 var afficher = document.getElementById("btnAfficher");
 var form= document.getElementById("formPersonne");
 var titre = document.getElementById("titre");
-
-
+var confirmModifPersonne = document.getElementById("confirmModifBtn");
+var annulerBtn = document.getElementById("annuler");
 
 
 //Action du click sur le bouton ajouter
 afficher.addEventListener("click", getAllUserData);
 comfirmationAjoutPersonne.addEventListener("click", ajoutePerso);
 ajouter.addEventListener("click", afficherAjoutPersoForm);
-//modifier.addEventListener("click", modifierPerso);
+confirmModifPersonne.addEventListener("click", modifierPerso);
+annulerBtn.addEventListener("click", actualiser);
 
 
 //########################################################## FONCTIONS ###########################################################################
+function actualiser() {
+  window.location.reload();
+} 
 /**
  * fonction executé lors click afficher utilisateur
  * @param {*} params 
@@ -61,53 +65,52 @@ function get(urlA) {
  * @param {string} valeur 
  */
 function genereListe(valeur) {
-    console.log("genererliste");
-  var tbl = document.getElementById("listePers");
+  console.log("genererliste");
 
-  tbl.classList.add("display");
-  tbl.classList.remove("hide");
-  ajouter.classList.add("display");
-  ajouter.classList.remove("hide");
-
+  // Récupère le tbody existant dans le tableau HTML
   var currentTblBody = document.getElementById("tableId");
-    while (currentTblBody.firstChild) {
+
+  // Supprime tous les enfants du tbody existant
+  while (currentTblBody.firstChild) {
       currentTblBody.removeChild(currentTblBody.firstChild);
-    }
-  
-  tbl.appendChild(currentTblBody);
-  for (var i = 0; i < 5; i++) {
-    var tr = document.createElement("tr");
-    currentTblBody.appendChild(tr);
   }
-  //ajout des utilisateurs
+
   for (let i = 0; i < valeur.length; i++) {
-    // Creation element "tr"
-    var row = document.createElement("tr");
+      var row = document.createElement("tr");
 
-    for (let j = 0; j < 4; j++) {
-      //Creation element "td"
-      var cell = document.createElement("td");
-      //Ajout du contenu a nos element html
-      var cellText = document.createTextNode(valeur[i][j]);
+      for (let j = 0; j < 4; j++) {
+          var cell = document.createElement("td");
+          var cellText = document.createTextNode(valeur[i][j]);
+          cell.appendChild(cellText);
+          row.appendChild(cell);
+      }
 
-      cell.appendChild(cellText);
-      row.appendChild(cell);
-    }
-    var newModifierBtn = creerModifierBtn();
-    var newSupprimerBtn = creerSuppBtn();
-    row.appendChild(newModifierBtn);
-    row.appendChild(newSupprimerBtn);
-    currentTblBody.appendChild(row);
+      var newModifierBtn = creerModifierBtn();
+      var newSupprimerBtn = creerSuppBtn();
+      row.appendChild(newModifierBtn);
+      row.appendChild(newSupprimerBtn);
+      currentTblBody.appendChild(row);
   }
-  tbl.appendChild(currentTblBody);
-  tbl.setAttribute("border", "2");
+
+  // Ajuste le tableau HTML avec le nouveau tbody généré
+  document.getElementById("listePers").appendChild(currentTblBody);
+  document.getElementById("listePers").setAttribute("border", "2");
 }
+
+
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
  * Affiche le forumlaire lors du premier click sur le boutton"Ajouter une personne"
  *  */   
 function afficherAjoutPersoForm(event) {
     event.preventDefault();
+    inputNom.value = "";
+        inputPrenom.value = "";
+        inputMail.value = "";
+        inputId.value = "";
+    msg.innerHTML = "";
+    divErr.innerHTML ="";
     titre.innerHTML = "Ajouter un utilisateur"
     form.classList.add("display");
     form.classList.remove("hide");
@@ -115,13 +118,17 @@ function afficherAjoutPersoForm(event) {
     comfirmAddPerson.classList.remove("hide");
     ajouter.classList.add('hide');
     ajouter.classList.remove('display');
-    getAllUserData();
+    annulerBtn.classList.add("display");
+    annulerBtn.classList.remove("hide");
+    confirmModifPersonne.classList.add("hide");
+    confirmModifPersonne.classList.remove("display");
+    //getAllUserData();
 }
 /**
  * Ajout d'un utilisateur
  */
 function ajoutePerso() {
-
+  
     var nom = inputNom.value;
     var prenom = inputPrenom.value;
     var mail = inputMail.value;
@@ -205,14 +212,14 @@ function post(url, donnees, tabDonnesPerso) {
         getAllUserData();
       } else {
         console.error("Ajout impossible");
-        msg.innerHTML = "Ajout impossible";
+        throw new Error ("Ajout impossible, identifiant existant")
+        
       }
     })
     .catch(function (err) {
       console.error("La requête POST a échoué : ", err);
-      msg.innerHTML = "La requête a échoué";
+      divErr.innerText = err.message;
     });
-    actualiser();
 }
 //--------------------
 async function supprimerPerso(id) {
@@ -244,12 +251,13 @@ async function supprimerPerso(id) {
             getAllUserData();
             } else {
               console.error("Suppression impossible");
-              msg.innerHTML = "Suppression impossible";
+              throw new Error ("Suppression impossible")
+              
             }
           })
           .catch(function (err) {
             console.error("La requête DELETE a échoué : ", err);
-            msg.innerHTML = "La requête a échoué";
+            divErr.innerText = err.message;
           });
       }
       
@@ -279,23 +287,42 @@ async function modifierPerso() {
             if (data == 1) {
                 console.log("La requête PUT a abouti avec la réponse JSON : ", data);
                 msg.innerHTML = "Modification effectuée";
+                //Reset tout les cases de l'input lors de l'ajout avec succes
+                inputNom.value = "";
+                inputPrenom.value = "";
+                inputMail.value = "";
+                inputId.value = "";
                 getAllUserData();
             } else {
                 console.error("Modification impossible");
-                msg.innerHTML = "Modification impossible";
+                throw new Error ("Modification impossible, identifiant n'existe pas")
             }
         })
         .catch(function (err) {
           console.error("La requête PUT a échoué : ", err);
-          msg.innerHTML = "La requête a échoué";
+          divErr.innerText = err.message;
         });
+}
+
+// Ajout d'un écouteur pour le bouton "Annuler" (cancelModifBtn)
+document.getElementById("cancelModifBtn").addEventListener("click", annulerModification);
+
+// Fonction pour annuler la modification
+function annulerModification() {
+    form.reset(); // Réinitialise le formulaire
+    form.classList.add("hide");
+    form.classList.remove("display");
+    confirmModifPersonne.classList.add("hide");
+    confirmModifPersonne.classList.remove("display");
+    ajouter.classList.remove("hide");
+    ajouter.classList.add("display");
 }
 
 function creerSuppBtn() {
     var button = document.createElement("button");
     button.textContent = "Supprimer";
     button.setAttribute("type", "button");
-    button.setAttribute("class", "suppBtn");
+    button.setAttribute("class", "modifSuppBtn btn btn-danger btn-sm");
     button.setAttribute("onclick", "gererSupprimerBtn(this)");
     return button;
 }
@@ -303,7 +330,7 @@ function creerModifierBtn() {
     var button = document.createElement("button");
     button.textContent = "Modifier";
     button.setAttribute("type", "button");
-    button.setAttribute("class", "modifierBtn");
+    button.setAttribute("class", "modifSuppBtn modifSuppBtn btn btn-warning btn-sm");
     button.setAttribute("onclick", "gererModifierButton(this)");
     return button;
 }
@@ -316,23 +343,44 @@ function creerModifierBtn() {
 function findIdOfRowBtn(button) {
     var ligne = button.parentNode;
     var idOfRowBtn = parseInt(ligne.firstChild.innerText);
+    inputId.value = idOfRowBtn;
+    inputNom.value = ligne.childNodes[1].innerText;
+    inputPrenom.value = ligne.childNodes[2].innerText;
+    inputMail.value = ligne.childNodes[3].innerText;
     return idOfRowBtn;
 }
 
 function gererSupprimerBtn(button) {
+  msg.innerHTML = "";
+  divErr.innerHTML = "";
+  form.classList.add("hide");
+  form.classList.remove("display");
+  ajouter.classList.add("display");
+    ajouter.classList.remove("hide");
   idOfRowBtn = findIdOfRowBtn(button);
   console.log(idOfRowBtn);
-  supprimerPerso(idOfRowBtn);
+  
+  if(confirm("Merci de confirmer la suppression")) supprimerPerso(idOfRowBtn);
 }
 function gererModifierButton(button) {
+    msg.innerHTML = "";
+    divErr.innerHTML = "";
+    titre.innerHTML = "Modification utilisateur"
+    form.classList.add("display");
+    form.classList.remove("hide");
+    comfirmationAjoutPersonne.classList.add("hide");
+    comfirmationAjoutPersonne.classList.remove("display");
+    confirmModifPersonne.classList.add("display");
+    confirmModifPersonne.classList.remove("hide");
+    ajouter.classList.add("display");
+    ajouter.classList.remove("hide");
+    annulerBtn.classList.add("display");
+    annulerBtn.classList.remove("hide");
     idOfRowBtn = findIdOfRowBtn(button);
     console.log(idOfRowBtn);
     if (typeof idOfRowBtn != "number" || idOfRowBtn < 0) throw new Error("Valeur id de la ligne ou se trouve le boutton incorrecte");
     
 }
 
-function actualiser() {
-  document.getElementById("listePers")
-  setTimeout(50)
-}
- 
+
+

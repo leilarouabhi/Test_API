@@ -16,7 +16,8 @@ class Personne {
 //////////////////////////////////// SETTER ///////////////////////////////////
 
     #setId(id){
-        this.#id = id;
+        if (/^[0-9]{1,}$/.test(id)===false) throw new Error ("ERR : Le Id doit comporter au moin 1 caractére et seulement des chiffres.")
+        else this.#id = id;
     }
     #setNom(nom){
         if(/^[a-zA-Z]{3,}$/.test(nom.trim())===false) throw new Error ("ERR : Le nom doit comporter au moin 3 caractéres et seulement des lettres.")
