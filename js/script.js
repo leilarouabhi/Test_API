@@ -2,23 +2,17 @@ let userId = document.getElementById("idUser");
 let msg = document.getElementById("msg");
 var btnDelete = document.getElementById("deleteBtn");
 var btnAdd = document.getElementById("addBtn");
-let btnPut = document.getElementById("changeDataBtn")
+let btnPut = document.getElementById("changeDataBtn");
+
+
 
 
 btnDelete.addEventListener("click", deleteUser);
 btnAdd.addEventListener("click", addUser);
 btnPut.addEventListener("click", putUser);
 
-
 // Utilisation de la fonction idExist avec .then() pour obtenir le résultat
-/*
-idExist(6)
-  .then((idExists) => {
-    console.log(idExists); // Utilisez la valeur retournée (true ou false)
-  })
-  .catch((error) => {
-    console.error("Error:", error);
-  });*/
+
   
 function idExist(id) {
   return new Promise((resolve, reject) => {
@@ -143,11 +137,17 @@ async function deleteUser() {
               .then(function (data) {
                   if (data == 1) {
                       console.log("La requête DELETE a abouti avec la réponse JSON : ", data);
+                      msg.innerHTML = "Elément supprimé avec succès"
                   } 
-                  else console.error('Suppression impossible');  
+                  else {
+                    console.error('Suppression impossible');
+                    msg.innerHTML = "Suppression impossible" 
+                  }
+
               })
               .catch(function (err) {
                   console.error("La requête DELETE a échoué : ", err);
+                  msg.innerHTML = "La requête a échoué"
               });
       }
       
@@ -176,8 +176,13 @@ console.log(exist);
   return exist;   
 }
 
-// ----------- Modier un USER 
+// ----------- Modier un USER
+function searchData() {
+
+}
+
 async function putUser (){
+
   let dataUser = {
     id: 1000,
     nom: "loulou",
@@ -197,8 +202,12 @@ async function putUser (){
               
               if (data == 1) {
                   console.log("La requête PUT a abouti avec la réponse JSON : ", data);
+                msg.innerHTML = "Modification effectuée";
               }
-              else console.error('Modification impossible') // 
+              else {
+                console.error('Modification impossible');
+                msg.innerHTML = "Modification impossible";
+              }
           })
 }
 
@@ -242,3 +251,70 @@ else return false    */
       }*/
 // })
 
+  function verifierDoublon(id) {
+    var tbl = document.getElementById("listePers");
+    var rows = tbl.getElementsByTagName("tr");
+
+    for (let i = 0; i < rows.length; i++) {
+        var cells = rows[i].getElementsByTagName("td");
+        if (cells.length > 0 && cells[0].innerText === id) {
+            // L'ID existe déjà
+            return true;
+        }
+    }
+
+    // L'ID n'existe pas encore
+    return false;
+  }
+  try {
+        // Vérifier si l'ID existe déjà dans la liste
+        if (verifierDoublon(id)) {
+            divErr.innerText = "Cet ID existe déjà. Veuillez utiliser un ID différent.";
+            return;
+        }
+
+        // Création de la personne
+        var adherent = creerPerso(id, nom, prenom, mail);
+        divErr.innerText = "";
+
+        // Conversion au format JSON
+        var dataJson = '{"id": "' + id + '", "nom":"' + nom + '", "prenom":"' + prenom + '", "email":"' + mail +'"' + '}';
+        post("http://fbrc.esy.es/DWWM22053/Api/api.php/users", dataJson);
+
+    } catch (err) {
+        divErr.innerText = err.message;
+        console.log(err.message);
+    }function verifierDoublon(id) {
+      var tbl = document.getElementById("listePers");
+      var rows = tbl.getElementsByTagName("tr");
+
+      for (let i = 0; i < rows.length; i++) {
+          var cells = rows[i].getElementsByTagName("td");
+          if (cells.length > 0 && cells[0].innerText === id) {
+              // L'ID existe déjà
+              return true;
+          }
+      }
+
+      // L'ID n'existe pas encore
+      return false;
+  }
+  try {
+          // Vérifier si l'ID existe déjà dans la liste
+          if (verifierDoublon(id)) {
+              divErr.innerText = "Cet ID existe déjà. Veuillez utiliser un ID différent.";
+              return;
+          }
+
+          // Création de la personne
+          var adherent = creerPerso(id, nom, prenom, mail);
+          divErr.innerText = "";
+
+          // Conversion au format JSON
+          var dataJson = '{"id": "' + id + '", "nom":"' + nom + '", "prenom":"' + prenom + '", "email":"' + mail +'"' + '}';
+          post("http://fbrc.esy.es/DWWM22053/Api/api.php/users", dataJson);
+
+      } catch (err) {
+          divErr.innerText = err.message;
+          console.log(err.message);
+      }

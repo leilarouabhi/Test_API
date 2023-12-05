@@ -1,0 +1,16 @@
+body .hide {
+    display: none;
+}
+
+body .display {
+    display: block;
+}
+
+input {
+    width: 300px;
+}
+
+#msg {
+    font-size: x-large;
+    color: brown;
+}
